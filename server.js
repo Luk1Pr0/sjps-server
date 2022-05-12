@@ -15,5 +15,10 @@ const kontaktRoutes = require('./routes/kontaktRoute');
 // USE IMPORTED ROUTES
 app.use('/kontakt', kontaktRoutes);
 
+// TESTING PURPOSE
+app.get('/', (req, res) => {
+	res.status(200).json('Server is working great');
+});
+
 // START SERVER
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
