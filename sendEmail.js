@@ -1,4 +1,3 @@
-const res = require('express/lib/response');
 const nodemailer = require('nodemailer');
 
 const sendEmails = async (fullName, userEmail, message) => {
@@ -12,11 +11,14 @@ const sendEmails = async (fullName, userEmail, message) => {
 	});
 
 	const mailOptions = {
-		from: { name: 'Polska Szkoła im. Św. Siostry Faustyny Kowalskiej', address: "szkolajezykapolskiegoslough@gmail.com" },
+		from: { name: fullName, address: userEmail },
 		to: process.env.MASTER_EMAIL || 'lpytel15@gmail.com',
 		subject: `${fullName} wypelnil formularz kontaktowy na stronie`,
 		text: `${fullName} wyslal wiadomosc ${message}`,
-		html: `<span><p><strong>${fullName}</strong> wyslal wiadomosc o tresci:</p>${message}</span>`,
+		html: `<span><p><strong>${fullName}</strong> wyslal wiadomosc o tresci:</p>${message}</span>
+			<br/></br/>
+			Odpisz na email: ${userEmail}
+		`,
 	};
 
 	const responseMailOptions = {
