@@ -1,7 +1,8 @@
 const nodemailer = require('nodemailer');
 
-const sendEmails = async (fullName, userEmail, message) => {
+const sendEmails = async (userFullName, userEmail, message) => {
 
+	// DETAILS USED TO SEND THE EMAILS
 	const transporter = nodemailer.createTransport({
 		service: "SendinBlue",
 		auth: {
@@ -10,24 +11,29 @@ const sendEmails = async (fullName, userEmail, message) => {
 		}
 	});
 
+	// OPTIONS FOR SENDING TO THE ADMIN
 	const mailOptions = {
-		from: { name: fullName, address: userEmail },
+		// FROM THE USER SUBMITTING THE FORM
+		from: { name: userFullName, address: userEmail },
+		// MASTER_EMAIL IS THE EMAIL OF THE ADMIN
 		to: process.env.MASTER_EMAIL || 'lpytel15@gmail.com',
-		subject: `${fullName} wypelnil formularz kontaktowy na stronie`,
-		text: `${fullName} wyslal wiadomosc ${message}`,
-		html: `<span><p><strong>${fullName}</strong> wyslal wiadomosc o tresci:</p>${message}</span>
+		subject: `${userFullName} wypelnil formularz kontaktowy na stronie`,
+		text: `${userFullName} wyslal wiadomosc ${message}`,
+		html: `<span><p><strong>${userFullName}</strong> wyslal wiadomosc o tresci:</p>${message}</span>
 			<br/></br/>
 			Odpisz na email: ${userEmail}
 		`,
 	};
 
+	// RESPONSE SENT TO THE USER CONFIRMING EMAIL BEING SENT
 	const responseMailOptions = {
+		// SEND FROM THE EMAIL ACCOUNT OF ADMIN
 		from: { name: 'Polska Szkoła im. Św. Siostry Faustyny Kowalskiej', address: "szkolajezykapolskiegoslough@gmail.com" },
 		to: userEmail,
 		subject: `Twój formularz został wysłany`,
 		text: `Dziękujemy za wypełnienie formularza. Będziemy w kontakcie najszybciej jak to będzie możliwe.`,
 		html: `
-		<span>Dziękujemy <strong>${fullName}</strong> za wypelnienie formularza.
+		<span>Dziękujemy <strong>${userFullName}</strong> za wypelnienie formularza.
 		<br/><br/>
 		Będziemy w kontakcie najszybciej jak to będzie możliwe. :)</span>
 		<br/><br/>
@@ -38,7 +44,7 @@ const sendEmails = async (fullName, userEmail, message) => {
 	};
 
 	try {
-		// SEND EMAIL TO POLSKA SZKOLA EMAIL ADDRESS
+		// SEND EMAIL TO ADMIN OF POLSKA SZKOLA WEBSITE
 		await transporter.sendMail(mailOptions, (error, info) => {
 			if (error) {
 				console.log(error);
