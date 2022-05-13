@@ -1,9 +1,10 @@
+const res = require('express/lib/response');
 const nodemailer = require('nodemailer');
 
 const sendEmails = async (fullName, userEmail, message) => {
 
 	const transporter = nodemailer.createTransport({
-		service: "gmail",
+		service: "SendinBlue",
 		auth: {
 			user: process.env.NODEMAILER_USER,
 			pass: process.env.NODEMAILER_PASS,
@@ -12,7 +13,7 @@ const sendEmails = async (fullName, userEmail, message) => {
 
 	const mailOptions = {
 		from: { name: 'Polska Szkoła im. Św. Siostry Faustyny Kowalskiej', address: "szkolajezykapolskiegoslough@gmail.com" },
-		to: 'lpytel15@gmail.com',
+		to: process.env.MASTER_EMAIL || 'lpytel15@gmail.com',
 		subject: `${fullName} wypelnil formularz kontaktowy na stronie`,
 		text: `${fullName} wyslal wiadomosc ${message}`,
 		html: `<span><p><strong>${fullName}</strong> wyslal wiadomosc o tresci:</p>${message}</span>`,
@@ -34,23 +35,28 @@ const sendEmails = async (fullName, userEmail, message) => {
 		`,
 	};
 
-	// SEND EMAIL TO POLSKA SZKOLA EMAIL ADDRESS
-	await transporter.sendMail(mailOptions, (error, info) => {
-		if (error) {
-			console.log(error);
-		}
-		console.log(info);
-		return;
-	});
+	try {
+		// SEND EMAIL TO POLSKA SZKOLA EMAIL ADDRESS
+		await transporter.sendMail(mailOptions, (error, info) => {
+			if (error) {
+				console.log(error);
+			}
+			console.log(info);
+			return;
+		});
 
-	// SEND EMAIL TO USER SAYING FORM HAS BEEN SUBMITTED
-	await transporter.sendMail(responseMailOptions, (error, info) => {
-		if (error) {
-			console.log(error);
-		}
-		console.log(info);
-		return;
-	});
+		// SEND EMAIL TO USER SAYING FORM HAS BEEN SUBMITTED
+		await transporter.sendMail(responseMailOptions, (error, info) => {
+			if (error) {
+				console.log(error);
+			}
+			console.log(info);
+			return;
+		});
+	} catch (error) {
+		return error;
+	}
+
 }
 
 
