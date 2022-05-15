@@ -48,23 +48,26 @@ const sendEmails = async (userFullName, userEmail, message) => {
 		await transporter.sendMail(mailOptions, (error, info) => {
 			if (error) {
 				console.log(error);
+				return false;
 			}
 			console.log(info);
-			return;
+			return true;
 		});
 
 		// SEND EMAIL TO USER SAYING FORM HAS BEEN SUBMITTED
 		await transporter.sendMail(responseMailOptions, (error, info) => {
 			if (error) {
 				console.log(error);
+				return false;
 			}
 			console.log(info);
-			return;
+			return true;
 		});
-	} catch (error) {
-		return error;
-	}
 
+	} catch (error) {
+		console.log(error)
+		return false
+	}
 }
 
 

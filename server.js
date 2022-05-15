@@ -8,10 +8,12 @@ app.use(express.json());
 app.use(cors());
 
 // IMPORT ROUTES
-const kontaktRoutes = require('./routes/kontaktRoute');
+const kontaktRoute = require('./routes/kontaktRoute');
+const loginRoute = require('./routes/loginRoute');
 
 // USE IMPORTED ROUTES
-app.use('/kontakt', kontaktRoutes);
+app.use('/kontakt', kontaktRoute);
+app.use('/login', loginRoute);
 
 // TESTING PURPOSE
 app.get('/', (req, res) => {
