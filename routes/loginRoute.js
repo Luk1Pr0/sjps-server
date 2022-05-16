@@ -7,10 +7,10 @@ router.post('/', (req, res) => {
 		const { email, password } = req.body;
 
 		// CHECK IF EMAIL AND PASSWORDS MATCH TO THE VARIABLES
-		if (email === 'lpytel16@gmail.com' && password === 'SjPs123') {
-			return res.status(200).json({ accessDenied: false });
+		if (email === process.env.MASTER_EMAIL && password === process.env.MASTER_PASS) {
+			return res.status(200).json({ email: email, userRole: 'admin' });
 		} else {
-			return res.status(401).json({ accessDenied: true });
+			return res.status(401).json({ userRole: 'anonymous' });
 		}
 
 	} catch (error) {
