@@ -17,7 +17,7 @@ router.post('/', (req, res) => {
 
 	} catch (error) {
 		// RESPOND WITH ERROR
-		res.status(400).json('An error occured');
+		res.status(400).json('A server error occured');
 	}
 });
 

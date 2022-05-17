@@ -16,9 +16,9 @@ const loginRoute = require('./routes/loginRoute');
 const aktualnosciRoute = require('./routes/aktualnosciRoute');
 
 // USE IMPORTED ROUTES
-app.use('/kontakt', kontaktRoute);
-app.use('/login', loginRoute);
-app.use('/aktualnosci', aktualnosciRoute);
+app.use('/kontakt/', kontaktRoute);
+app.use('/login/', loginRoute);
+app.use('/aktualnosci/', aktualnosciRoute);
 
 // TESTING PURPOSE
 app.get('/', (req, res) => {

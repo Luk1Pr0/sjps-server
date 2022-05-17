@@ -3,7 +3,7 @@ const router = require('express').Router();
 // MODEL
 const UpdateModel = require('../models/UpdateModel');
 
-// POST
+// POST NEW UPDATE
 router.post('/', async (req, res, next) => {
 	const { title, message } = req.body;
 
@@ -18,11 +18,11 @@ router.post('/', async (req, res, next) => {
 		return res.status(200).json('Update added')
 	} catch (error) {
 		// RETURN ERROR
-		return res.status(400).json('Cannot connect to database')
+		return res.status(400).json('Cannot create a new update')
 	}
 })
 
-// GET
+// GET ALL UPDATES
 router.get('/', async (req, res) => {
 	try {
 		// GET UPDATES FROM
@@ -37,7 +37,7 @@ router.get('/', async (req, res) => {
 
 })
 
-// DELETE POST
+// DELETE SPECIFIC UPDATE
 router.delete('/:id', async (req, res) => {
 
 	try {
@@ -45,7 +45,7 @@ router.delete('/:id', async (req, res) => {
 		const deletedUpdate = await UpdateModel.findByIdAndDelete(req.params.id);
 
 		// RESPOND TO CLIENT WITH CONFIRMATION
-		return res.status(200).json('Deleted');
+		return res.status(200).json('Update deleted');
 
 	} catch (error) {
 		// IN CASE OF ERROR RETURN ERROR
