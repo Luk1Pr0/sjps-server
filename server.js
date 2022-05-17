@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 
 // MIDDLEWARE
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
 
 // IMPORT ROUTES
 const kontaktRoute = require('./routes/kontaktRoute');
