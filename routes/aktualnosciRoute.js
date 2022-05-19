@@ -5,14 +5,16 @@ const UpdateModel = require('../models/UpdateModel');
 
 // POST NEW UPDATE
 router.post('/', async (req, res, next) => {
-	const { title, message } = req.body;
+	const { title, message, attachment } = req.body;
+
+	console.log('Request server', req);
 
 	try {
 		// ADD NEW UPDATE TO DB
-		const newUpdate = await new UpdateModel({
-			title: title,
-			message: message
-		}).save();
+		// const newUpdate = await new UpdateModel({
+		// 	title: title,
+		// 	message: message
+		// }).save();
 
 		// RETURN SUCCESSFULL RESPONSE
 		return res.status(200).json('Update added')
@@ -23,6 +25,21 @@ router.post('/', async (req, res, next) => {
 })
 
 // GET ALL UPDATES
+router.get('/', async (req, res) => {
+	try {
+		// GET UPDATES FROM
+		const updatesFromDb = await UpdateModel.find();
+
+		// RESPOND TO CLIENT WITH ALL UPDATES
+		return res.status(200).json(updatesFromDb);
+	} catch (error) {
+		// IN CASE OF ERROR RETURN ERROR
+		return res.json(400).json('Could not find updates in the database');
+	}
+
+})
+
+// GET SPECIFIC UPDATE
 router.get('/', async (req, res) => {
 	try {
 		// GET UPDATES FROM
