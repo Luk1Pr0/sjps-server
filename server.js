@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 require('dotenv').config();
 
 // DATABASE
@@ -8,7 +9,8 @@ const mongoose = require('mongoose');
 
 // MIDDLEWARE
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
+app.use(fileUpload());
 
 // IMPORT ROUTES
 const kontaktRoute = require('./routes/kontaktRoute');
@@ -18,7 +20,7 @@ const aktualnosciRoute = require('./routes/aktualnosciRoute');
 // USE IMPORTED ROUTES
 app.use('/kontakt/', kontaktRoute);
 app.use('/login/', loginRoute);
-app.use('/aktualnosci/', aktualnosciRoute);
+app.use('/aktualnosci/', fileUpload(), aktualnosciRoute);
 
 // TESTING PURPOSE
 app.get('/', (req, res) => {
