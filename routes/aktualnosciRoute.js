@@ -7,20 +7,39 @@ const UpdateModel = require('../models/UpdateModel');
 router.post('/', async (req, res, next) => {
 	const { title, message, attachment } = req.body;
 
-	console.log('Request server', req);
-
 	try {
 		// ADD NEW UPDATE TO DB
-		// const newUpdate = await new UpdateModel({
-		// 	title: title,
-		// 	message: message
-		// }).save();
+		const newUpdate = await new UpdateModel({
+			title: title,
+			message: message
+		}).save();
 
 		// RETURN SUCCESSFULL RESPONSE
 		return res.status(200).json('Update added')
 	} catch (error) {
 		// RETURN ERROR
 		return res.status(400).json('Cannot create a new update')
+	}
+})
+
+// UPDATE EXISTING UPDATE
+router.put('/:id', async (req, res, next) => {
+
+	// DATA THAT NEEDS TO BE UPDATED
+	const { title, message } = req.body;
+
+	// ID OF UPDATE THAT NEEDS TO BE UPDATED
+	const { id } = req.params;
+
+	try {
+		// UPDATE EXISITNG UPDATE IN THE DB
+		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: id }, { title: title, message: message });
+
+		// RETURN SUCCESSFULL RESPONSE
+		return res.status(200).json('Update updated')
+	} catch (error) {
+		// RETURN ERROR
+		return res.status(400).json('Cannot update existing update')
 	}
 })
 
