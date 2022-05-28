@@ -1,71 +1,42 @@
 const router = require('express').Router();
-const path = require('path');
-const url = require('url');
+const validateFile = require('../validateFile');
 
 // MODEL
 const UpdateModel = require('../models/UpdateModel');
 
 // POST NEW UPDATE
-router.post('/', async (req, res, next) => {
+router.post('/', validateFile, async (req, res) => {
 
-	const uploadedFile = req.files.file;
+	const uploadedFile = req.fileUrl;
 
-	const baseUrl = req.headers.host;
+	try {
+		// ADD NEW UPDATE TO DB
+		const newUpdate = await new UpdateModel({
+			title: req.body.title,
+			message: req.body.message,
+			fileUrl: uploadedFile,
+		}).save();
 
-	// IF NO FILE ADDED THEN RETURN ELSE, PROCESS THE FILE
-	if (!uploadedFile || uploadedFile === null || uploadedFile === undefined) {
-		// uploadedFile = {};
-	} else {
+		// RETURN SUCCESSFULL RESPONSE
+		return res.status(200).json('Update added');
 
-		// GENERATE CURRENT DATE TO USE IT IN THE FILE NAME
-		const newDate = Date.parse(new Date()).toString();
-
-		// GENERATE UNIQUE FULL NAME
-		const uniqueFileName = `${newDate}${uploadedFile.name.toLowerCase()}`;
-
-		// SET THE TARGET PATH FOR THE FILE TO BE STORED IN
-		const targetPath = path.join(__dirname, '../public/uploads', uniqueFileName);
-
-		// MOVE FILE TO THE CORRECT DIR
-		const movedFile = uploadedFile.mv(targetPath, err => {
-			if (err) {
-				console.log('ERROR', err);
-			}
-		});
-
-		// CREATE FILE URL WITH THE BASE LINK OF WEBSITE
-		const fileUrl = `http://${baseUrl}/${uniqueFileName}`
-
-		try {
-			// ADD NEW UPDATE TO DB
-			const newUpdate = await new UpdateModel({
-				title: req.body.title,
-				message: req.body.message,
-				filePath: fileUrl,
-			}).save();
-
-			// RETURN SUCCESSFULL RESPONSE
-			return res.status(200).json('Update added');
-		} catch (error) {
-			// RETURN ERROR
-			console.log('THIS IS THE ERROR', error);
-			return res.status(400).json('Cannot create a new update')
-		}
+	} catch (error) {
+		// RETURN ERROR
+		return res.status(400).json('Cannot create a new update')
 	}
 })
 
 // UPDATE EXISTING UPDATE
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', validateFile, async (req, res) => {
+
+	const uploadedFile = req.fileUrl;
 
 	// DATA THAT NEEDS TO BE UPDATED
-	const { title, message } = req.body;
-
-	// ID OF UPDATE THAT NEEDS TO BE UPDATED
-	const { id } = req.params;
+	console.log(uploadedFile);
 
 	try {
 		// UPDATE EXISITNG UPDATE IN THE DB
-		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: id }, { title: title, message: message });
+		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, fileUrl: uploadedFile });
 
 		// RETURN SUCCESSFULL RESPONSE
 		return res.status(200).json('Update updated')

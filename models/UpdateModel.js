@@ -8,8 +8,9 @@ const updateSchema = new mongoose.Schema({
 	message: {
 		type: String,
 	},
-	filePath: {
+	fileUrl: {
 		type: String,
+		default: ''
 	},
 	dateAdded: {
 		type: Date,
