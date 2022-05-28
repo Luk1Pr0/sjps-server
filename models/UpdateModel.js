@@ -7,7 +7,10 @@ const updateSchema = new mongoose.Schema({
 	},
 	message: {
 		type: String,
-		required: true,
+	},
+	fileUrl: {
+		type: String,
+		default: ''
 	},
 	dateAdded: {
 		type: Date,

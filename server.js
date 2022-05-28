@@ -1,8 +1,9 @@
 const express = require('express');
 const app = express();
-const cors = require('cors');
 const fileUpload = require('express-fileupload');
+const cors = require('cors');
 require('dotenv').config();
+const path = require('path');
 
 // DATABASE
 const mongoose = require('mongoose');
@@ -10,17 +11,23 @@ const mongoose = require('mongoose');
 // MIDDLEWARE
 app.use(express.json());
 app.use(cors({ origin: '*' }));
-app.use(fileUpload());
+app.use(express.static(path.join(__dirname, 'public/uploads/')));
 
 // IMPORT ROUTES
 const kontaktRoute = require('./routes/kontaktRoute');
 const loginRoute = require('./routes/loginRoute');
 const aktualnosciRoute = require('./routes/aktualnosciRoute');
 
+// OPTIONS
+const fileUploadOptions = {
+	createParentPath: true,
+}
+
 // USE IMPORTED ROUTES
 app.use('/kontakt/', kontaktRoute);
 app.use('/login/', loginRoute);
-app.use('/aktualnosci/', fileUpload(), aktualnosciRoute);
+// PARSE THE FILE FROM FORM VIA FORMIDABLE
+app.use('/aktualnosci/', fileUpload(fileUploadOptions), aktualnosciRoute);
 
 // TESTING PURPOSE
 app.get('/', (req, res) => {

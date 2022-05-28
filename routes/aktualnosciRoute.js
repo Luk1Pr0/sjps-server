@@ -1,21 +1,25 @@
 const router = require('express').Router();
+const validateFile = require('../validateFile');
 
 // MODEL
 const UpdateModel = require('../models/UpdateModel');
 
 // POST NEW UPDATE
-router.post('/', async (req, res, next) => {
-	const { title, message, attachment } = req.body;
+router.post('/', validateFile, async (req, res) => {
+
+	const uploadedFile = req.fileUrl;
 
 	try {
 		// ADD NEW UPDATE TO DB
 		const newUpdate = await new UpdateModel({
-			title: title,
-			message: message
+			title: req.body.title,
+			message: req.body.message,
+			fileUrl: uploadedFile,
 		}).save();
 
 		// RETURN SUCCESSFULL RESPONSE
-		return res.status(200).json('Update added')
+		return res.status(200).json('Update added');
+
 	} catch (error) {
 		// RETURN ERROR
 		return res.status(400).json('Cannot create a new update')
@@ -23,17 +27,13 @@ router.post('/', async (req, res, next) => {
 })
 
 // UPDATE EXISTING UPDATE
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', validateFile, async (req, res) => {
 
-	// DATA THAT NEEDS TO BE UPDATED
-	const { title, message } = req.body;
-
-	// ID OF UPDATE THAT NEEDS TO BE UPDATED
-	const { id } = req.params;
+	const uploadedFile = req.fileUrl;
 
 	try {
 		// UPDATE EXISITNG UPDATE IN THE DB
-		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: id }, { title: title, message: message });
+		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, fileUrl: uploadedFile });
 
 		// RETURN SUCCESSFULL RESPONSE
 		return res.status(200).json('Update updated')
@@ -51,26 +51,11 @@ router.get('/', async (req, res) => {
 
 		// RESPOND TO CLIENT WITH ALL UPDATES
 		return res.status(200).json(updatesFromDb);
+
 	} catch (error) {
 		// IN CASE OF ERROR RETURN ERROR
 		return res.json(400).json('Could not find updates in the database');
 	}
-
-})
-
-// GET SPECIFIC UPDATE
-router.get('/', async (req, res) => {
-	try {
-		// GET UPDATES FROM
-		const updatesFromDb = await UpdateModel.find();
-
-		// RESPOND TO CLIENT WITH ALL UPDATES
-		return res.status(200).json(updatesFromDb);
-	} catch (error) {
-		// IN CASE OF ERROR RETURN ERROR
-		return res.json(400).json('Could not find updates in the database');
-	}
-
 })
 
 // DELETE SPECIFIC UPDATE
