@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 // MIDDLEWARE
 app.use(express.json());
 app.use(cors({ origin: '*' }));
-app.use(express.static(__dirname + '../public'));
+app.use(express.static(path.join(__dirname, 'public/uploads/')));
 
 // IMPORT ROUTES
 const kontaktRoute = require('./routes/kontaktRoute');
@@ -20,7 +20,6 @@ const aktualnosciRoute = require('./routes/aktualnosciRoute');
 
 // OPTIONS
 const fileUploadOptions = {
-	// uriDecodeFileNames: true,
 	createParentPath: true,
 }
 

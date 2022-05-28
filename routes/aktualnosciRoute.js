@@ -8,15 +8,13 @@ const UpdateModel = require('../models/UpdateModel');
 // POST NEW UPDATE
 router.post('/', async (req, res, next) => {
 
-	console.log(req.headers.host);
-
-	console.log(url.parse(req.headers.host), true);
-
 	const uploadedFile = req.files.file;
+
+	const baseUrl = req.headers.host;
 
 	// IF NO FILE ADDED THEN RETURN ELSE, PROCESS THE FILE
 	if (!uploadedFile || uploadedFile === null || uploadedFile === undefined) {
-		return res.status(200).json('No file uploaded');
+		// uploadedFile = {};
 	} else {
 
 		// GENERATE CURRENT DATE TO USE IT IN THE FILE NAME
@@ -26,15 +24,17 @@ router.post('/', async (req, res, next) => {
 		const uniqueFileName = `${newDate}${uploadedFile.name.toLowerCase()}`;
 
 		// SET THE TARGET PATH FOR THE FILE TO BE STORED IN
-		const targetPath = path.join(__dirname, '../public/uploads/', uniqueFileName);
+		const targetPath = path.join(__dirname, '../public/uploads', uniqueFileName);
 
 		// MOVE FILE TO THE CORRECT DIR
-		const movedFile = uploadedFile.mv(targetPath)
+		const movedFile = uploadedFile.mv(targetPath, err => {
+			if (err) {
+				console.log('ERROR', err);
+			}
+		});
 
-		// GET URL FOR THE FILE
-		const fileUrl = url.pathToFileURL(targetPath).href;
-
-		console.log(fileUrl);
+		// CREATE FILE URL WITH THE BASE LINK OF WEBSITE
+		const fileUrl = `http://${baseUrl}/${uniqueFileName}`
 
 		try {
 			// ADD NEW UPDATE TO DB
@@ -44,13 +44,11 @@ router.post('/', async (req, res, next) => {
 				filePath: fileUrl,
 			}).save();
 
-			// console.log(await UpdateModel.findOne({ filePath: uploadedFile.path }));
-
 			// RETURN SUCCESSFULL RESPONSE
-			return res.status(200).json('Update added')
+			return res.status(200).json('Update added');
 		} catch (error) {
 			// RETURN ERROR
-			console.log(error);
+			console.log('THIS IS THE ERROR', error);
 			return res.status(400).json('Cannot create a new update')
 		}
 	}
