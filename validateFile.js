@@ -2,6 +2,7 @@ const path = require('path');
 
 const validateFile = (req, res, next) => {
 
+	// IF NO FILE UPLOADED CONTINUE
 	if (req.files === null) {
 		return next();
 	} else {
@@ -20,7 +21,7 @@ const validateFile = (req, res, next) => {
 		const targetPath = path.join(__dirname, './public/uploads', uniqueFileName);
 
 		// CREATE FILE URL WITH THE BASE LINK OF WEBSITE
-		const fileUrl = `http://${baseUrl}/${uniqueFileName}`
+		const fileUrl = `${req.protocol}://${baseUrl}/${uniqueFileName}`
 
 		// MOVE FILE TO THE CORRECT DIR
 		uploadedFile.mv(targetPath, err => {
@@ -30,6 +31,7 @@ const validateFile = (req, res, next) => {
 			}
 		});
 
+		// SET FILE AS A REQUEST VARIABLE
 		req.fileUrl = fileUrl;
 		return next();
 	}

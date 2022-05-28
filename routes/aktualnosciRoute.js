@@ -31,9 +31,6 @@ router.put('/:id', validateFile, async (req, res) => {
 
 	const uploadedFile = req.fileUrl;
 
-	// DATA THAT NEEDS TO BE UPDATED
-	console.log(uploadedFile);
-
 	try {
 		// UPDATE EXISITNG UPDATE IN THE DB
 		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, fileUrl: uploadedFile });
