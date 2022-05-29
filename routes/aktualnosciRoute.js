@@ -1,20 +1,26 @@
 const router = require('express').Router();
-const validateFile = require('../validateFile');
+const fs = require('fs');
+const path = require('path');
+
+// MIDDLEWARE
+const encodeFile = require('../middleware/encodeFile');
+const decodeFile = require('../middleware/decodeFile');
 
 // MODEL
 const UpdateModel = require('../models/UpdateModel');
 
 // POST NEW UPDATE
-router.post('/', validateFile, async (req, res) => {
+router.post('/', encodeFile, async (req, res) => {
 
-	const uploadedFile = req.fileUrl;
+	const uploadedFile = req.fileData;
 
 	try {
 		// ADD NEW UPDATE TO DB
 		const newUpdate = await new UpdateModel({
 			title: req.body.title,
 			message: req.body.message,
-			fileUrl: uploadedFile,
+			file: uploadedFile,
+			fileUrl: '',
 		}).save();
 
 		// RETURN SUCCESSFULL RESPONSE
@@ -27,13 +33,13 @@ router.post('/', validateFile, async (req, res) => {
 })
 
 // UPDATE EXISTING UPDATE
-router.put('/:id', validateFile, async (req, res) => {
+router.put('/:id', encodeFile, async (req, res) => {
 
-	const uploadedFile = req.fileUrl;
+	// const uploadedFile = req.fileUrl;
 
 	try {
 		// UPDATE EXISITNG UPDATE IN THE DB
-		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, fileUrl: uploadedFile });
+		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message });
 
 		// RETURN SUCCESSFULL RESPONSE
 		return res.status(200).json('Update updated')
@@ -44,14 +50,10 @@ router.put('/:id', validateFile, async (req, res) => {
 })
 
 // GET ALL UPDATES
-router.get('/', async (req, res) => {
+router.get('/', decodeFile, (req, res) => {
+
 	try {
-		// GET UPDATES FROM
-		const updatesFromDb = await UpdateModel.find();
-
-		// RESPOND TO CLIENT WITH ALL UPDATES
-		return res.status(200).json(updatesFromDb);
-
+		// DECODEFILE MIDDLEWARE TAKES CARE OF FETCHING ALL UPDATES
 	} catch (error) {
 		// IN CASE OF ERROR RETURN ERROR
 		return res.json(400).json('Could not find updates in the database');

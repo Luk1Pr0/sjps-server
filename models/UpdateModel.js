@@ -8,6 +8,11 @@ const updateSchema = new mongoose.Schema({
 	message: {
 		type: String,
 	},
+	file: {
+		data: Buffer,
+		type: String,
+		default: '',
+	},
 	fileUrl: {
 		type: String,
 		default: ''
