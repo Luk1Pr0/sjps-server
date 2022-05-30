@@ -28,6 +28,7 @@ router.post('/', encodeFile, async (req, res) => {
 
 	} catch (error) {
 		// RETURN ERROR
+		console.log(error);
 		return res.status(400).json('Cannot create a new update')
 	}
 })
@@ -35,11 +36,11 @@ router.post('/', encodeFile, async (req, res) => {
 // UPDATE EXISTING UPDATE
 router.put('/:id', encodeFile, async (req, res) => {
 
-	// const uploadedFile = req.fileUrl;
+	const uploadedFile = req.fileData;
 
 	try {
 		// UPDATE EXISITNG UPDATE IN THE DB
-		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message });
+		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, file: uploadedFile, fileUrl: '' });
 
 		// RETURN SUCCESSFULL RESPONSE
 		return res.status(200).json('Update updated')
@@ -51,7 +52,6 @@ router.put('/:id', encodeFile, async (req, res) => {
 
 // GET ALL UPDATES
 router.get('/', decodeFile, (req, res) => {
-
 	try {
 		// DECODEFILE MIDDLEWARE TAKES CARE OF FETCHING ALL UPDATES
 	} catch (error) {

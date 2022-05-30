@@ -13,20 +13,22 @@ const decodeFile = async (req, res, next) => {
 
 	updatesFromDb.map(update => {
 
-		// CREATE A BUFFER FROM BASE64 FORMATTED IMG
-		const buff = Buffer.from(update.file, 'base64');
+		if (update.file !== undefined || update.file !== '') {
+			// CREATE A BUFFER FROM BASE64 FORMATTED IMG
+			const buff = Buffer.from(update.file, 'base64');
 
-		// WRITE THIS IMG TO THE PUBLIC FOLDER
-		const uniqueFileName = Math.random() * 5;
+			// CREATE A UNIQUE FILENAME BASED ON TITLE
+			const uniqueFileName = update.title.toLowerCase().trim();
 
-		// WRITE THE DECODED FILE To THE PUBLIC FOLDER
-		fs.writeFileSync(path.join(__dirname, `../public/uploads/${uniqueFileName}.png`), buff);
+			// WRITE THE DECODED FILE To THE PUBLIC FOLDER
+			fs.writeFileSync(path.join(__dirname, `../public/uploads/${uniqueFileName}.png`), buff);
 
-		// CREATE A URL FOR THE FILE
-		const fileUrl = `${'https'}://${req.headers.host}/${uniqueFileName}.png`;
+			// CREATE A URL FOR THE FILE
+			const fileUrl = `http://${req.headers.host}/${uniqueFileName}.png`;
 
-		// SET THE FILE URL TO THE GENERATED URL
-		update.fileUrl = fileUrl;
+			// SET THE FILE URL TO THE GENERATED URL
+			update.fileUrl = fileUrl;
+		}
 
 		// PUSH THE UPDATE TO THE DECODED ARRAY WHICH WILL BE RETURNED TO THE CLIENT
 		decodedUpdates.push(update);
