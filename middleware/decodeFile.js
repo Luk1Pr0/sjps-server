@@ -24,7 +24,7 @@ const decodeFile = async (req, res, next) => {
 			fs.writeFileSync(path.join(__dirname, `../public/uploads/${uniqueFileName}.png`), buff);
 
 			// CREATE A URL FOR THE FILE
-			const fileUrl = `http://${req.headers.host}/${uniqueFileName}.png`;
+			const fileUrl = `https://${req.headers.host}/${uniqueFileName}.png`;
 
 			// SET THE FILE URL TO THE GENERATED URL
 			update.fileUrl = fileUrl;
