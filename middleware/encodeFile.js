@@ -13,8 +13,6 @@ const encodeFile = async (req, res, next) => {
 		// CREATE A FILEPATH TO SAVE THE FILE IN
 		const filePath = path.join(__dirname, '../public/uploads/', uploadedFile.name.toLowerCase());
 
-		console.log('ENCODE FILE PATH', filePath);
-
 		// MOVE FILE TO THE CORRECT LOCATION
 		uploadedFile.mv(filePath);
 
