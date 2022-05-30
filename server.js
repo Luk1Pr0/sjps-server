@@ -20,6 +20,7 @@ const aktualnosciRoute = require('./routes/aktualnosciRoute');
 
 // OPTIONS
 const fileUploadOptions = {
+	createParentPath: true,
 }
 
 // USE IMPORTED ROUTES
