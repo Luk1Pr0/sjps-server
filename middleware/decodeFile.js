@@ -21,7 +21,9 @@ const decodeFile = async (req, res, next) => {
 			const uniqueFileName = update.title.toLowerCase().trim();
 
 			// WRITE THE DECODED FILE To THE PUBLIC FOLDER
-			fs.writeFileSync(path.join(__dirname, `../public/uploads/${uniqueFileName}.png`), buff);
+			const filePath = fs.writeFileSync(path.join(__dirname, `../public/uploads/${uniqueFileName}.png`), buff);
+
+			console.log('DECODE FILE PATH', filePath);
 
 			// CREATE A URL FOR THE FILE
 			const fileUrl = `https://${req.headers.host}/${uniqueFileName}.png`;
