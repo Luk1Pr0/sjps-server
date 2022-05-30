@@ -14,7 +14,7 @@ const encodeFile = async (req, res, next) => {
 		const filePath = path.join(__dirname, '../public/uploads/', uploadedFile.name.toLowerCase());
 
 		// MOVE FILE TO THE CORRECT LOCATION
-		uploadedFile.mv(filePath);
+		// uploadedFile.mv(filePath);
 
 		// ENCODE THE IMAGE BUFFER INTO A STRING BASE64
 		const base64Img = Buffer.from(uploadedFile.data, 'base64').toString('base64');
