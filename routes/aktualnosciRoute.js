@@ -53,11 +53,19 @@ router.put('/:id', encodeFile, async (req, res) => {
 })
 
 // GET ALL UPDATES
-router.get('/', decodeFile, (req, res) => {
+router.get('/', async (req, res, next) => {
 	try {
-		// DECODEFILE MIDDLEWARE TAKES CARE OF FETCHING ALL UPDATES
+		// // GET ALL UPDATES FROM DB
+		const updatesFromDb = await UpdateModel.find();
+
+		// DECODE THE FILES FROM DATABASE FOR ALL UPDATES
+		const allUpdates = decodeFile(updatesFromDb, req);
+
+		return res.status(200).json(allUpdates);
+
 	} catch (error) {
 		// IN CASE OF ERROR RETURN ERROR
+		console.log(error);
 		return res.json(400).json('Could not find updates in the database');
 	}
 })

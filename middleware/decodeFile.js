@@ -1,49 +1,41 @@
 const fs = require('fs');
 const path = require('path');
 
-const UpdateModel = require('../models/UpdateModel');
-
-const decodeFile = async (req, res, next) => {
-
-	// GET ALL UPDATES FROM DB
-	const updatesFromDb = await UpdateModel.find();
+const decodeFile = (updatesArr, req) => {
 
 	// ARRAY THAT WILL BE SENT AS A RESPONSE TO THE CLIENT
 	const decodedUpdates = [];
 
-	updatesFromDb.map(update => {
+	console.log(req.protocol);
 
-		// IF FILE EXISTS
-		if (update.file !== '' || update.fileName !== '') {
+	updatesArr.map(update => {
 
-			// CREATE A BUFFER FROM BASE64 FORMATTED IMG
-			const buff = Buffer.from(update.fileData, 'base64');
+		if (update.fileName !== '') {
+			// CREATE AN IMG BUFFER FROM THE DATABASE FILE
+			const imgBuffer = Buffer.from(update.fileData, 'base64');
 
-			// WRITE THE DECODED FILE To THE PUBLIC FOLDER
-			fs.writeFileSync(path.join(__dirname, `../public/uploads/${update.fileName}`), buff);
+			// NAVIGATE TO THE IMG LOCATION
+			const imgLocation = path.join(__dirname, `../public/uploads/${update.fileName}`)
 
-			// CREATE A URL FOR THE FILE
-			const fileUrl = `https://${req.headers.host}/${update.fileName}`;
+			// WRITE THE NEW BUFFER TO THE IMG LOCATION DEFINED
+			fs.writeFileSync(imgLocation, imgBuffer);
 
-			// SET THE FILE URL TO THE GENERATED URL
-			update.fileUrl = fileUrl;
+			// CREATE A URL FOR THE IMG
+			const imgUrl = `${req.protocol}://${req.headers.host}/${update.fileName}`;
 
-			// PUSH THE UPDATE TO THE DECODED ARRAY WHICH WILL BE RETURNED TO THE CLIENT
-			decodedUpdates.push(update);
-		}
-		// IF FILE IS EMPTY
-		if (update.file === '') {
-			update.fileUrl = '';
-			update.fileName = '';
+			// ADD THE NEW URL
+			update.fileUrl = imgUrl;
 
-			// PUSH THE UPDATE TO THE DECODED ARRAY WHICH WILL BE RETURNED TO THE CLIENT
-			decodedUpdates.push(update);
+			// PUSH THE CHANGED UPDATE TO THE NEW ARRAY OF UPDATES
+			decodedUpdates.push(update)
+
+		} else {
+			// PUSH THE CHANGED UPDATE TO THE NEW ARRAY OF UPDATES
+			decodedUpdates.push(update)
 		}
 	});
 
-	res.status(200).json(decodedUpdates);
-
-	return next();
+	return decodedUpdates;
 }
 
 module.exports = decodeFile; 

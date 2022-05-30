@@ -9,7 +9,7 @@ const encodeFile = async (req, res, next) => {
 	} else {
 
 		const uploadedFile = req.files.file;
-		const uploadedFileName = uploadedFile.name.trim().toLowerCase();
+		const uploadedFileName = uploadedFile.name.toLowerCase().trim();
 
 		// CREATE A FILEPATH TO SAVE THE FILE IN
 		const filePath = path.join(__dirname, '../public/uploads/', uploadedFileName);
