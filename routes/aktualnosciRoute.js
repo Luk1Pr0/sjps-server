@@ -12,14 +12,16 @@ const UpdateModel = require('../models/UpdateModel');
 // POST NEW UPDATE
 router.post('/', encodeFile, async (req, res) => {
 
-	const uploadedFile = req.fileData;
+	const uploadedFileData = req.fileData;
+	const uploadedFileName = req.fileName;
 
 	try {
 		// ADD NEW UPDATE TO DB
 		const newUpdate = await new UpdateModel({
 			title: req.body.title,
 			message: req.body.message,
-			file: uploadedFile,
+			fileData: uploadedFileData,
+			fileName: uploadedFileName,
 			fileUrl: '',
 		}).save();
 

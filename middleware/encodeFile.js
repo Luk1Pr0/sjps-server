@@ -9,9 +9,10 @@ const encodeFile = async (req, res, next) => {
 	} else {
 
 		const uploadedFile = req.files.file;
+		const uploadedFileName = uploadedFile.name.trim().toLowerCase();
 
 		// CREATE A FILEPATH TO SAVE THE FILE IN
-		const filePath = path.join(__dirname, '../public/uploads/', uploadedFile.name.toLowerCase().trim());
+		const filePath = path.join(__dirname, '../public/uploads/', uploadedFileName);
 
 		// MOVE FILE TO THE CORRECT LOCATION
 		uploadedFile.mv(filePath);
@@ -21,6 +22,8 @@ const encodeFile = async (req, res, next) => {
 
 		// SET FILE AS A REQUEST VARIABLE
 		req.fileData = base64Img;
+		req.fileName = uploadedFile.name;
+
 		return next();
 	}
 }

@@ -9,8 +9,12 @@ const updateSchema = new mongoose.Schema({
 	message: {
 		type: String,
 	},
-	file: {
+	fileData: {
 		data: Buffer,
+		type: String,
+		default: '',
+	},
+	fileName: {
 		type: String,
 		default: '',
 	},
