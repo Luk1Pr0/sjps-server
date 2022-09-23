@@ -103,6 +103,7 @@ router.get('/', async (req, res, next) => {
 
 		// DECODE THE FILES FROM DATABASE FOR ALL UPDATES
 		// const allUpdates = decodeFile(updatesFromDb, req);
+		const allUpdates = updatesFromDb;
 
 		return res.status(200).json(allUpdates);
 
