@@ -11,23 +11,28 @@ const decodeFile = (updatesArr, req) => {
 	updatesArr.map(update => {
 
 		if (update.fileName !== '') {
-			// CREATE AN IMG BUFFER FROM THE DATABASE FILE
-			const imgBuffer = Buffer.from(update.fileData, 'base64');
+			try {
+				// CREATE AN IMG BUFFER FROM THE DATABASE FILE
+				const imgBuffer = Buffer.from(update.fileData, 'base64');
 
-			// NAVIGATE TO THE IMG LOCATION
-			const imgLocation = path.join(__dirname, `../public/uploads/${update.fileName}`)
+				// NAVIGATE TO THE IMG LOCATION
+				const imgLocation = path.join(__dirname, `../public/uploads/${update.fileName}`)
 
-			// WRITE THE NEW BUFFER TO THE IMG LOCATION DEFINED
-			fs.writeFileSync(imgLocation, imgBuffer);
+				// WRITE THE NEW BUFFER TO THE IMG LOCATION DEFINED
+				fs.writeFileSync(imgLocation, imgBuffer);
 
-			// CREATE A URL FOR THE IMG
-			const imgUrl = `${req.protocol}://${req.headers.host}/${update.fileName}`;
+				// CREATE A URL FOR THE IMG
+				const imgUrl = `${req.protocol}://${req.headers.host}/${update.fileName}`;
 
-			// ADD THE NEW URL
-			update.fileUrl = imgUrl;
+				// ADD THE NEW URL
+				update.fileUrl = imgUrl;
 
-			// PUSH THE CHANGED UPDATE TO THE NEW ARRAY OF UPDATES
-			decodedUpdates.push(update)
+				// PUSH THE CHANGED UPDATE TO THE NEW ARRAY OF UPDATES
+				decodedUpdates.push(update)
+			} catch (err) {
+				return req.json({ status: 400, msg: err })
+			}
+
 
 		} else {
 			// PUSH THE CHANGED UPDATE TO THE NEW ARRAY OF UPDATES

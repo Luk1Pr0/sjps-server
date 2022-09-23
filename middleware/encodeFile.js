@@ -8,23 +8,29 @@ const encodeFile = async (req, res, next) => {
 		return next();
 	} else {
 
-		const uploadedFile = req.files.file;
-		const uploadedFileName = uploadedFile.name.toLowerCase().trim();
+		try {
+			const uploadedFile = req.files.file;
+			const uploadedFileName = uploadedFile.name.toLowerCase().trim();
 
-		// CREATE A FILEPATH TO SAVE THE FILE IN
-		const filePath = path.join(__dirname, '../public/uploads/', uploadedFileName);
+			// CREATE A FILEPATH TO SAVE THE FILE IN
+			const filePath = path.join(__dirname, '../public/uploads/', uploadedFileName);
 
-		// MOVE FILE TO THE CORRECT LOCATION
-		uploadedFile.mv(filePath);
+			// MOVE FILE TO THE CORRECT LOCATION
+			uploadedFile.mv(filePath);
 
-		// ENCODE THE IMAGE BUFFER INTO A STRING BASE64
-		const base64Img = Buffer.from(uploadedFile.data, 'base64').toString('base64');
+			// ENCODE THE IMAGE BUFFER INTO A STRING BASE64
+			const base64Img = Buffer.from(uploadedFile.data, 'base64').toString('base64');
 
-		// SET FILE AS A REQUEST VARIABLE
-		req.fileData = base64Img;
-		req.fileName = uploadedFile.name;
+			// SET FILE AS A REQUEST VARIABLE
+			req.fileData = base64Img;
+			req.fileName = uploadedFile.name;
 
-		return next();
+			return next();
+		}
+		catch (err) {
+			return res.json({ status: 400, msg: err })
+		}
+
 	}
 }
 
