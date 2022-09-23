@@ -10,7 +10,33 @@ const decodeFile = require('../middleware/decodeFile');
 const UpdateModel = require('../models/UpdateModel');
 
 // POST NEW UPDATE
-router.post('/', encodeFile, async (req, res) => {
+// router.post('/', encodeFile, async (req, res) => {
+
+// 	const uploadedFileData = req.fileData;
+// 	const uploadedFileName = req.fileName;
+
+// 	try {
+// 		// ADD NEW UPDATE TO DB
+// 		const newUpdate = await new UpdateModel({
+// 			title: req.body.title,
+// 			message: req.body.message,
+// 			fileData: uploadedFileData,
+// 			fileName: uploadedFileName,
+// 			fileUrl: '',
+// 		}).save();
+
+// 		// RETURN SUCCESSFULL RESPONSE
+// 		return res.status(200).json('Update added');
+
+// 	} catch (error) {
+// 		// RETURN ERROR
+// 		console.log(error);
+// 		return res.status(400).json('Cannot create a new update')
+// 	}
+// })
+
+// POST NEW UPDATE (DUPLICATE OF THE ABOVE TESTING WITHOUT THE ENCODEFILE MIDDLEWARE)
+router.post('/', async (req, res) => {
 
 	const uploadedFileData = req.fileData;
 	const uploadedFileName = req.fileName;
