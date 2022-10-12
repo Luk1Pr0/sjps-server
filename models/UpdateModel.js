@@ -9,18 +9,9 @@ const updateSchema = new mongoose.Schema({
 	message: {
 		type: String,
 	},
-	fileData: {
-		data: Buffer,
-		type: String,
-		default: '',
-	},
-	fileName: {
-		type: String,
-		default: '',
-	},
 	fileUrl: {
 		type: String,
-		default: ''
+		default: '',
 	},
 	dateAdded: {
 		type: Date,
