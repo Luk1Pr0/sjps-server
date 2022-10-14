@@ -5,7 +5,7 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
 // MIDDLEWARE
-
+const uploadImageAndGetUrl = require('../middleware/uploadImage');
 
 // MODEL
 const UpdateModel = require('../models/UpdateModel');
@@ -17,43 +17,39 @@ router.post('/', async (req, res) => {
 	let uploadedFile;
 
 	// CHECK IF THE FILE EXISTS OR NOT AND PROCEED ACCORDINGLY
-	req.files === null ? uploadedFile = '' : uploadedFile = req.files.file;
+	uploadedFile = req.files === null ? '' : req.files.file;
 
 	try {
-
-		// IMAGE URL VARIABLE
-		let imageUrl = '';
+		// IMAGE DATA
+		let imageData = {
+			url: '',
+			key: ''
+		}
 
 		// IF A FILE WAS UPLOADED PUSH IT TO S3
 		if (uploadedFile !== '') {
-			// UPLOAD THE FILE TO S3
-			const image = await s3.putObject({
-				Body: Buffer.from(uploadedFile.data),
-				Bucket: "cyclic-stormy-cyan-neckerchief-eu-west-1",
-				Key: uploadedFile.name,
-			}).promise();
 
-			// GET THE URL OF THE UPLOADED IMAGE
-			const uploadedImageUrl = s3.getSignedUrl('getObject', {
-				Bucket: "cyclic-stormy-cyan-neckerchief-eu-west-1",
-				Key: uploadedFile.name,
-			});
+			// UPLOAD THE IMAGE TO S3 AND GET THE IMAGE URL
+			const returnedImage = await uploadImageAndGetUrl(uploadedFile);
 
-			// ASSIGN THE IMAGE TO THE VARIABLE CREATED ABOVE
-			imageUrl = uploadedImageUrl;
+			// ASSIGN THE VALUE TO THE OBJECT THAT WILL BE UPLOADED TO DB
+			imageData.url = returnedImage.url;
+			imageData.key = returnedImage.key;
 		}
 
 		// ADD NEW UPDATE TO DB
 		const newUpdate = await new UpdateModel({
 			title: req.body.title,
 			message: req.body.message,
-			fileUrl: imageUrl,
+			fileUrl: imageData.url,
+			fileKey: imageData.key,
 		}).save();
 
 		// RETURN SUCCESSFULL RESPONSE
 		return res.status(200).json('Update added');
 	} catch (error) {
 		// RETURN ERROR
+		console.log(error);
 		return res.status(400).json(error);
 	}
 })
@@ -65,11 +61,34 @@ router.put('/:id', async (req, res) => {
 	let uploadedFile;
 
 	// CHECK IF THE FILE EXISTS OR NOT AND PROCEED ACCORDINGLY
-	req.files === null ? uploadedFile = '' : uploadedFile = req.files.fileUrl;
+	uploadedFile = req.files === null ? '' : req.files.file;
 
 	try {
-		// UPDATE EXISITNG UPDATE IN THE DB
-		const existingUpdate = await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, fileUrl: uploadedFile });
+		// IMAGE DATA
+		let imageData = {
+			url: '',
+			key: ''
+		}
+
+		// IF A NEW FILE WAS UPLOADED PUSH IT TO S3 AND GET URL
+		if (uploadedFile !== '') {
+			// UPLOAD THE IMAGE TO S3 AND GET THE IMAGE URL
+			const returnedImage = await uploadImageAndGetUrl(uploadedFile);
+
+			// ASSIGN THE VALUE TO THE OBJECT THAT WILL BE UPLOADED TO DB
+			imageData.url = returnedImage.url;
+			imageData.key = returnedImage.key;
+		} else {
+			// FIND THE UPDATE IN THE DATABASE
+			const existingUpdate = await UpdateModel.findOne({ _id: req.params.id });
+
+			// SET THE IMAGE URL TO THE ONE FROM DATABASE
+			imageData.url = await existingUpdate.fileUrl;
+			imageData.key = await existingUpdate.fileKey;
+		}
+
+		// UPDATE EXISTING UPDATE IN THE DB
+		await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, fileUrl: imageData.url, fileKey: imageData.key });
 
 		// RETURN SUCCESSFULL RESPONSE
 		return res.status(200).json('Update updated')
@@ -81,6 +100,7 @@ router.put('/:id', async (req, res) => {
 
 // GET ALL UPDATES
 router.get('/', async (req, res, next) => {
+
 	try {
 		// GET ALL UPDATES FROM DB
 		const updatesFromDb = await UpdateModel.find();
@@ -89,14 +109,25 @@ router.get('/', async (req, res, next) => {
 	} catch (error) {
 		// IN CASE OF ERROR RETURN ERROR
 		console.log(error);
-		// return res.json(400).json('Could not find updates in the database');
+		return res.json(400).json('Could not find updates in the database');
 	}
 })
 
 // DELETE SPECIFIC UPDATE
 router.delete('/:id', async (req, res) => {
-
 	try {
+		// RETRIEVE THE UPDATE TO DELETE
+		const updateFromDb = await UpdateModel.findOne({ _id: req.params.id });
+
+		// DELETE THE IMAGE FROM THE S3 BUCKET
+		s3.deleteObject({
+			Bucket: process.env.BUCKET,
+			Key: updateFromDb.fileKey,
+		}, (err, data) => {
+			if (err) console.log('error', err);
+			console.log('Image deleted', data);
+		});
+
 		// DELETE THE UPDATE FROM THE DATABASE
 		const deletedUpdate = await UpdateModel.findByIdAndDelete(req.params.id);
 

@@ -13,6 +13,10 @@ const updateSchema = new mongoose.Schema({
 		type: String,
 		default: '',
 	},
+	fileKey: {
+		type: String,
+		default: '',
+	},
 	dateAdded: {
 		type: Date,
 		default: Date.now(),
