@@ -13,7 +13,6 @@ const uploadImageAndGetUrl = async (image) => {
 			Body: Buffer.from(image.data),
 			Bucket: process.env.AWS_BUCKET,
 			Key: image.name,
-			ACL: 'public-read'
 		}).promise();
 
 		// GET THE URL OF THE UPLOADED IMAGE
