@@ -17,10 +17,8 @@ const uploadImageAndGetUrl = async (image) => {
 		}).promise();
 
 		// GET THE URL OF THE UPLOADED IMAGE
-		const imageUrl = await s3.getSignedUrl('getObject', {
-			Bucket: process.env.AWS_BUCKET,
-			Key: image.name,
-		});
+		const imageUrl = `https://s3-${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_BUCKET}/${image.name}`
+		
 		return { url: imageUrl, key: image.name };
 	} catch (err) {
 		// RETURN THE ERROR
