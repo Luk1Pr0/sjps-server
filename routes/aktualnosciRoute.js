@@ -78,6 +78,9 @@ router.put('/:id', async (req, res) => {
 			// ASSIGN THE VALUE TO THE OBJECT THAT WILL BE UPLOADED TO DB
 			imageData.url = returnedImage.url;
 			imageData.key = returnedImage.key;
+
+			console.log('uploadedImage', uploadedFile);
+
 		} else {
 			// FIND THE UPDATE IN THE DATABASE
 			const existingUpdate = await PostModel.findOne({ _id: req.params.id });
@@ -86,6 +89,7 @@ router.put('/:id', async (req, res) => {
 			imageData.url = await existingUpdate.fileUrl;
 			imageData.key = await existingUpdate.fileKey;
 		}
+
 
 		// UPDATE EXISTING UPDATE IN THE DB
 		await PostModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, fileUrl: imageData.url, fileKey: imageData.key });

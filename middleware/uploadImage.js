@@ -4,6 +4,7 @@ AWS.config.update({
 		accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 		secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 		region: process.env.AWS_REGION,
+		sessionToken: ''
 	});
 
 const uploadImageAndGetUrl = async (image) => {
@@ -18,8 +19,6 @@ const uploadImageAndGetUrl = async (image) => {
 		// GET THE URL OF THE UPLOADED IMAGE
 		const imageUrl = `https://s3-${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_BUCKET}/${image.name}`
 		
-		console.log('debugging purpose', imageUrl);
-
 		return { url: imageUrl, key: image.name };
 	} catch (err) {
 		// RETURN THE ERROR
