@@ -119,14 +119,17 @@ router.delete('/:id', async (req, res) => {
 		// RETRIEVE THE UPDATE TO DELETE
 		const updateFromDb = await UpdateModel.findOne({ _id: req.params.id });
 
-		// DELETE THE IMAGE FROM THE S3 BUCKET
-		s3.deleteObject({
-			Bucket: process.env.BUCKET,
-			Key: updateFromDb.fileKey,
-		}, (err, data) => {
-			if (err) console.log('error', err);
-			console.log('Image deleted', data);
-		});
+		// IF THE UPDATE HAS AN IMAGE URL THEN DELETE THE IMAGE IN S3
+		if (updateFromDb.fileUrl.length > 1) {
+			// DELETE THE IMAGE FROM THE S3 BUCKET
+			await s3.deleteObject({
+				Bucket: process.env.AWS_BUCKET,
+				Key: updateFromDb.fileKey,
+			}, (err, data) => {
+				if (err) console.log('error', err);
+				console.log('Image deleted', data);
+			});
+		}
 
 		// DELETE THE UPDATE FROM THE DATABASE
 		const deletedUpdate = await UpdateModel.findByIdAndDelete(req.params.id);
