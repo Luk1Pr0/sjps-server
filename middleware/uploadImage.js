@@ -19,6 +19,8 @@ const uploadImageAndGetUrl = async (image) => {
 		// GET THE URL OF THE UPLOADED IMAGE
 		const imageUrl = `https://s3-${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_BUCKET}/${image.name}`
 		
+		console.log('debugging purpose', imageUrl);
+
 		return { url: imageUrl, key: image.name };
 	} catch (err) {
 		// RETURN THE ERROR
