@@ -8,7 +8,7 @@ const s3 = new AWS.S3();
 const uploadImageAndGetUrl = require('../middleware/uploadImage');
 
 // MODEL
-const UpdateModel = require('../models/UpdateModel');
+const PostModel = require('../models/PostModel');
 
 // POST NEW UPDATE (DUPLICATE OF THE ABOVE TESTING WITHOUT THE ENCODEFILE MIDDLEWARE)
 router.post('/', async (req, res) => {
@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
 		}
 
 		// ADD NEW UPDATE TO DB
-		const newUpdate = await new UpdateModel({
+		const newUpdate = await new PostModel({
 			title: req.body.title,
 			message: req.body.message,
 			fileUrl: imageData.url,
@@ -80,7 +80,7 @@ router.put('/:id', async (req, res) => {
 			imageData.key = returnedImage.key;
 		} else {
 			// FIND THE UPDATE IN THE DATABASE
-			const existingUpdate = await UpdateModel.findOne({ _id: req.params.id });
+			const existingUpdate = await PostModel.findOne({ _id: req.params.id });
 
 			// SET THE IMAGE URL TO THE ONE FROM DATABASE
 			imageData.url = await existingUpdate.fileUrl;
@@ -88,7 +88,7 @@ router.put('/:id', async (req, res) => {
 		}
 
 		// UPDATE EXISTING UPDATE IN THE DB
-		await UpdateModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, fileUrl: imageData.url, fileKey: imageData.key });
+		await PostModel.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, message: req.body.message, fileUrl: imageData.url, fileKey: imageData.key });
 
 		// RETURN SUCCESSFULL RESPONSE
 		return res.status(200).json('Update updated')
@@ -103,7 +103,7 @@ router.get('/', async (req, res, next) => {
 
 	try {
 		// GET ALL UPDATES FROM DB
-		const updatesFromDb = await UpdateModel.find();
+		const updatesFromDb = await PostModel.find();
 
 		return res.status(200).json(updatesFromDb);
 	} catch (error) {
@@ -117,7 +117,7 @@ router.get('/', async (req, res, next) => {
 router.delete('/:id', async (req, res) => {
 	try {
 		// RETRIEVE THE UPDATE TO DELETE
-		const updateFromDb = await UpdateModel.findOne({ _id: req.params.id });
+		const updateFromDb = await PostModel.findOne({ _id: req.params.id });
 
 		// IF THE UPDATE HAS AN IMAGE URL THEN DELETE THE IMAGE IN S3
 		if (updateFromDb.fileUrl.length > 1) {
@@ -132,7 +132,7 @@ router.delete('/:id', async (req, res) => {
 		}
 
 		// DELETE THE UPDATE FROM THE DATABASE
-		const deletedUpdate = await UpdateModel.findByIdAndDelete(req.params.id);
+		const deletedUpdate = await PostModel.findByIdAndDelete(req.params.id);
 
 		// RESPOND TO CLIENT WITH CONFIRMATION
 		return res.status(200).json('Update deleted');

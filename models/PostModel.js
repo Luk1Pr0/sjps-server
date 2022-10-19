@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const updateSchema = new mongoose.Schema({
+const postSchema = new mongoose.Schema({
 	title: {
 		type: String,
 		required: true,
@@ -23,4 +23,4 @@ const updateSchema = new mongoose.Schema({
 	}
 })
 
-module.exports = mongoose.model('UpdateModel', updateSchema);
+module.exports = mongoose.model('PostModel', postSchema);
