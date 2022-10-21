@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 
-const s3 = AWS.S3();
+const s3 = new AWS.S3();
 
 const uploadImageAndGetUrl = async (image) => {
 	try {
