@@ -8,7 +8,7 @@ const s3 = new AWS.S3({
 
 const uploadImageAndGetUrl = async (image) => {
 	try {
-		console.log('POSTING TO S3')
+		console.log('POSTING TO S3 \n', process.env.AWS_ACCESS_KEY_ID + '\n' + process.env.AWS_SECRET_ACCESS_KEY)
 		// UPLOAD THE FILE TO S3
 		const newImage = await s3.putObject({
 			Body: Buffer.from(image.data),
