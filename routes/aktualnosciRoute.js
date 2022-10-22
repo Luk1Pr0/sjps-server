@@ -2,7 +2,11 @@ const router = require('express').Router();
 const fs = require('fs');
 const path = require('path');
 const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({
+	accessKeyId: process.env.AWS_ACCESS_KEY_ID_CUSTOM,
+	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_CUSTOM,
+	region: process.env.AWS_REGION_CUSTOM,
+});
 
 // MIDDLEWARE
 const uploadImageAndGetUrl = require('../middleware/uploadImage');
