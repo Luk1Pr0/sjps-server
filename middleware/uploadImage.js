@@ -8,18 +8,19 @@ const s3 = new AWS.S3({
 
 const uploadImageAndGetUrl = async (image) => {
 	try {
-		console.log('POSTING TO S3 \n', process.env.AWS_ACCESS_KEY_ID_CUSTOM + '\n' + process.env.AWS_SECRET_ACCESS_KEY_CUSTOM)
 		// UPLOAD THE FILE TO S3
-		const newImage = await s3.putObject({
+		const newImage = await s3.upload({
 			Body: Buffer.from(image.data),
 			Bucket: process.env.AWS_BUCKET_CUSTOM,
 			Key: image.name,
 		}).promise();
 
-		console.log('POSTED TO S3')
+		const imageUrl = await newImage.Location;
+
+		console.log("🚀 ~ file: uploadImage.js ~ line 19 ~ uploadImageAndGetUrl ~ imageUrl", imageUrl)
 
 		// GET THE URL OF THE UPLOADED IMAGE
-		const imageUrl = `https://s3-${process.env.AWS_REGION_CUSTOM}.amazonaws.com/${process.env.AWS_BUCKET_CUSTOM}/${image.name}`
+		// const imageUrl = `https://s3-${process.env.AWS_REGION_CUSTOM}.amazonaws.com/${process.env.AWS_BUCKET_CUSTOM}/${image.name}`
 		
 		return { url: imageUrl, key: image.name };
 	} catch (err) {
