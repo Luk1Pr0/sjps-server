@@ -127,7 +127,7 @@ router.delete('/:id', async (req, res) => {
 		if (updateFromDb.fileUrl.length > 1) {
 			// DELETE THE IMAGE FROM THE S3 BUCKET
 			await s3.deleteObject({
-				Bucket: process.env.AWS_BUCKET,
+				Bucket: process.env.AWS_BUCKET_CUSTOM,
 				Key: updateFromDb.fileKey,
 			}, (err, data) => {
 				if (err) console.log('error', err);
